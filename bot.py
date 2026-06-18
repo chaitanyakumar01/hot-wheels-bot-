@@ -46,7 +46,6 @@ PARAMS = {
 def get_headers(location):
     return {
         "Accept": "/",
-        "Accept-Encoding": "gzip, deflate",
         "Accept-Language": "en-GB,en;q=0.7",
         "Access_token": "v2::ef02f7b4-67d0-47d2-b4a7-e10fee3267a7",
         "App_client": "consumer_web",
@@ -77,6 +76,8 @@ def check_location(location):
     print(f"🔍 {location['name']} check ho raha hai...")
     try:
         response = requests.post(URL, headers=get_headers(location), params=PARAMS, timeout=10)
+        print(f"Status: {response.status_code}")
+        print(f"Raw response: {response.content[:200]}")
         data = response.json()
 
         snippets = data.get("response", {}).get("snippets", [])
