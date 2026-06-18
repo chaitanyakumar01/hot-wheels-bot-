@@ -13,15 +13,21 @@ seen_products = set()
 LOCATIONS = [
     {
         "name": "Gym",
-        "lat": "26.8380581",
-        "lon": "80.8764446",
-        "cookie": "gr_1_deviceId=c9d6bf80-0e46-48f3-82eb-6e81d55fdb90; city=; ext_name=ojplmecpdpgccookcobabopnaifgidhf; gr_1_accessToken=v2%3A%3Aef02f7b4-67d0-47d2-b4a7-e10fee3267a7; gr_1_lat=26.8380581; gr_1_lon=80.8764446; gr_1_locality=958; gr_1_landmark=undefined",
+        "lat": "26.8147755",
+        "lon": "80.9940688",
+        "cookie": os.getenv("COOKIE_GYM"),
     },
     {
         "name": "Dost ki Shop",
         "lat": "26.7843739",
         "lon": "80.8919504",
-        "cookie": "gr_1_deviceId=c9d6bf80-0e46-48f3-82eb-6e81d55fdb90; city=; ext_name=ojplmecpdpgccookcobabopnaifgidhf; gr_1_accessToken=v2%3A%3Aef02f7b4-67d0-47d2-b4a7-e10fee3267a7; gr_1_lat=26.7843739; gr_1_lon=80.8919504; gr_1_locality=958; gr_1_landmark=undefined",
+        "cookie": os.getenv("COOKIE_DOST"),
+    },
+    {
+        "name": "Kushagra ke Ghar",
+        "lat": "26.8147755",
+        "lon": "80.9940688",
+        "cookie": os.getenv("COOKIE_KUSHAGRA"),
     },
 ]
 
@@ -58,10 +64,16 @@ def get_headers(location):
         "Origin": "https://blinkit.com",
         "Referer": "https://blinkit.com/s/?q=hot%20wheels",
         "Rn_bundle_version": "1009003012",
-        "Session_uuid": "d05a6ffe-77a0-4209-b668-ffa0d945df6e",
+        "Session_uuid": "58a72deb-b356-4aa3-99fb-124123ac3db3",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
         "Web_app_version": "1008010016",
         "Cookie": location["cookie"],
+        "Sec-Ch-Ua": '"Brave";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"macOS"',
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
     }
 
 def send_discord_notification(message):
@@ -76,8 +88,7 @@ def check_location(location):
     print(f"🔍 {location['name']} check ho raha hai...")
     try:
         response = requests.post(URL, headers=get_headers(location), params=PARAMS, timeout=10)
-        print(f"Status: {response.status_code}")
-        print(f"Raw response: {response.content[:200]}")
+        print(f"Status ({location['name']}): {response.status_code}")
         data = response.json()
 
         snippets = data.get("response", {}).get("snippets", [])
@@ -118,7 +129,7 @@ def check_all():
         time.sleep(2)
 
 if __name__ == "__main__":
-    print("🚀 Bot shuru! Har 10 minute mein dono locations check karega...")
+    print("🚀 Bot shuru! Har 10 minute mein teenon locations check karega...")
     check_all()
 
     schedule.every(10).minutes.do(check_all)
