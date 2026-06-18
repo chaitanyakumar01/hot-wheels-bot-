@@ -18,7 +18,7 @@ LOCATIONS = [
         "cookie": "gr_1_deviceId=c9d6bf80-0e46-48f3-82eb-6e81d55fdb90; city=; ext_name=ojplmecpdpgccookcobabopnaifgidhf; gr_1_accessToken=v2%3A%3Aef02f7b4-67d0-47d2-b4a7-e10fee3267a7; gr_1_lat=26.8380581; gr_1_lon=80.8764446; gr_1_locality=958; gr_1_landmark=undefined",
     },
     {
-        "name": "Gyaan doodh",
+        "name": "Dost ki Shop",
         "lat": "26.7843739",
         "lon": "80.8919504",
         "cookie": "gr_1_deviceId=c9d6bf80-0e46-48f3-82eb-6e81d55fdb90; city=; ext_name=ojplmecpdpgccookcobabopnaifgidhf; gr_1_accessToken=v2%3A%3Aef02f7b4-67d0-47d2-b4a7-e10fee3267a7; gr_1_lat=26.7843739; gr_1_lon=80.8919504; gr_1_locality=958; gr_1_landmark=undefined",
@@ -46,6 +46,7 @@ PARAMS = {
 def get_headers(location):
     return {
         "Accept": "/",
+        "Accept-Encoding": "gzip, deflate",
         "Accept-Language": "en-GB,en;q=0.7",
         "Access_token": "v2::ef02f7b4-67d0-47d2-b4a7-e10fee3267a7",
         "App_client": "consumer_web",
@@ -90,8 +91,12 @@ def check_location(location):
         new_items = []
         for p in products:
             pid = str(p.get("product_id") or p.get("identity", {}).get("id")) + "_" + location["name"]
-            name = p.get("name", {}).get("text", "Unknown")
-            clean_name = name.replace("Hot Wheels", "").replace("Die Cast Car", "").replace("Die-Cast Car", "").strip()
+            name = p.get("name", {}).get("text", "")
+
+            if "Hot Wheels" not in name:
+                continue
+
+            clean_name = name.replace("Hot Wheels", "").replace("Die Cast Car", "").replace("Die-Cast Car", "").replace("Toy Car", "").replace("Toy Vehicle", "").strip()
 
             if pid and pid not in seen_products:
                 seen_products.add(pid)
@@ -101,7 +106,7 @@ def check_location(location):
             msg = f"New Stock at {location['name']}!\n\n" + "\n".join(new_items)
             send_discord_notification(msg)
         else:
-            print(f"ℹ️ {location['name']} pe koi naya item nahi.")
+            print(f"ℹ️ {location['name']} pe koi naya Hot Wheels nahi.")
 
     except Exception as e:
         print(f"❌ Error ({location['name']}): {e}")
