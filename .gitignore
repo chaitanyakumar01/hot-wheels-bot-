@@ -1,0 +1,17 @@
+# Environment files
+.env
+.env.local
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+
+# Local runtime artifacts
+*.db
+*.db-shm
+*.db-wal
+seen_products.json

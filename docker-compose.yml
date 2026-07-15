@@ -1,0 +1,9 @@
+services:
+  hotwheels-monitor:
+    build: .
+    env_file:
+      - .env
+    command: ["python", "bot.py", "--state-file", "/app/data/seen_products.db"]
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

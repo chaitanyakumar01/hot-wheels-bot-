@@ -1,61 +1,103 @@
 # 🚗 Hot Wheels Blinkit Monitor
 
-A bot that monitors Blinkit for Hot Wheels availability and sends Discord notifications when new stock appears.
+A Python bot that monitors Blinkit for Hot Wheels stock and sends Discord notifications when new items appear.
 
-## What it does
-- Checks Blinkit every 10 minutes for Hot Wheels
-- Monitors multiple delivery locations simultaneously
-- Filters out non-Hot Wheels products automatically
-- Sends instant Discord notifications on new stock
+## What this project does
+- Checks Blinkit search results for Hot Wheels products
+- Monitors multiple locations using location-specific cookies
+- Avoids duplicate alerts by storing seen product IDs in a SQLite database
+- Sends Discord notifications for newly detected stock
+- Supports a health endpoint for deployment platforms
+- Can run locally, in Docker, or on a cloud host
 
-## Project Structure
-hotwheels-monitor/
+## What has been added
+- Persistent seen-state storage so the bot does not repeatedly notify about the same products after restarts
+- Retry logic for network requests so temporary failures do not immediately stop checks
+- Config validation and safer startup behavior for deployment environments
+- Graceful shutdown support for cleaner container and host stops
+- Optional health endpoint for platforms like Render, Railway, and similar services
+- Docker and deployment-ready configuration files
 
-├── bot.py              # Main bot logic
+## Project structure
+- [bot.py](bot.py) — main bot logic, polling, notification handling, and health server
+- [requirements.txt](requirements.txt) — Python dependencies
+- [Procfile](Procfile) — startup command for hosting platforms
+- [Dockerfile](Dockerfile) — container build configuration
+- [docker-compose.yml](docker-compose.yml) — local container setup
+- [.env.example](.env.example) — example environment configuration
+- [.dockerignore](.dockerignore) — files excluded from Docker builds
 
-├── requirements.txt    # Python dependencies
+## One-click deploy
+If you want the easiest hosted setup, use Render:
 
-├── Procfile           # Railway deployment config
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/your-username/your-repo)
 
-└── .env               # API credentials (not tracked)
+Replace the GitHub URL in the button with your repository URL after pushing this project to GitHub.
 
+## Local setup
 
-## Setup
-
-### 1. Clone the repo
+### 1. Install dependencies
 ```bash
-git clone https://github.com/chaitanyakumar01/hot-wheels-bot-
-cd hot-wheels-bot-
+python3 -m pip install -r requirements.txt
 ```
 
-### 2. Install dependencies
+### 2. Create a `.env` file
+Copy [.env.example](.env.example) and fill in your values:
 ```bash
-pip install -r requirements.txt
+cp .env.example .env
 ```
 
-### 3. Create `.env` file
-DISCORD_WEBHOOK_URL=cant_disclose_hehe
-
-### 4. Run locally
+### 3. Run once
 ```bash
-python bot.py
+python3 bot.py --once
 ```
 
-## Deployment
-Deployed on [Railway](https://railway.app) for 24/7 monitoring.
+### 4. Run continuously
+```bash
+python3 bot.py
+```
 
-## Environment Variables
+## Health check
+The bot can expose a simple health endpoint for deployment platforms:
+```bash
+python3 bot.py --health-port 8000
+```
+Then check it with:
+```bash
+curl http://localhost:8000/health
+```
+
+## Docker
+Build and run locally with Docker:
+```bash
+docker build -t hotwheels-monitor .
+docker run --rm --env-file .env hotwheels-monitor --once
+```
+
+You can also use Docker Compose:
+```bash
+docker-compose up --build
+```
+
+## Deployment options
+This project is ready for:
+- Render
+- Railway
+- Heroku-style platforms
+- Docker-compatible hosts
+
+For platforms that expect a web process, the included [Procfile](Procfile) starts the bot with a health-enabled entrypoint.
+
+## Environment variables
 | Variable | Description |
 |---|---|
 | `DISCORD_WEBHOOK_URL` | Discord webhook URL for notifications |
+| `COOKIE_GYM` | Cookie for the Gym location |
+| `COOKIE_DOST` | Cookie for the Anubhav/Dost location |
+| `COOKIE_KUSHAGRA` | Cookie for the Kushagra location |
+| `PORT` | Optional port used by hosting platforms for the health endpoint |
 
-## Monitored Locations
-- Gym area (Lucknow)
-- Dost ki Shop (Lucknow)
-
-## Tech Stack
-- Python
-- Requests
-- Schedule
-- Discord Webhooks
-- Blinkit API
+## Notes
+- The bot uses a local SQLite database file to remember previously seen products.
+- If configuration values are missing, the bot will still start safely and skip affected checks instead of crashing immediately.
+- For best results, make sure your webhook URL and cookies are configured before relying on live alerts.

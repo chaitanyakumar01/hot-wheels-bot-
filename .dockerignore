@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+.git/
+seen_products.db
+seen_products.json
+.DS_Store
