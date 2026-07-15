@@ -30,6 +30,8 @@ A Python bot that monitors Blinkit for Hot Wheels stock and sends Discord notifi
 ## Deployment
 This project can be deployed to supported hosting platforms such as Render, Railway, or other Docker-compatible environments.
 
+For Render, you can deploy directly from the repository using the included Render configuration file.
+
 Typical deployment steps:
 1. Push the repository to GitHub.
 2. Create a new service on your hosting platform and connect the repository.

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: hot-wheels-bot
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py --health-port $PORT
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: DISCORD_WEBHOOK_URL
+        value: ""
+      - key: COOKIE_GYM
+        value: ""
+      - key: COOKIE_DOST
+        value: ""
+      - key: COOKIE_KUSHAGRA
+        value: ""
+      - key: STATE_FILE
+        value: "/tmp/seen_products.db"
