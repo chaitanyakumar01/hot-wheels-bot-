@@ -308,7 +308,7 @@ def check_location(location):
         return
 
     try:
-        response = request_with_retries(URL, headers=get_headers(location), params=PARAMS, timeout=10)
+        response = request_with_retries(URL, headers=get_headers(location), json=PARAMS, timeout=10)
         logger.info("Status (%s): %s", location["name"], response.status_code)
         data = response.json()
 
@@ -368,7 +368,7 @@ def seed_seen_store():
     total_marked = 0
     for location in LOCATIONS:
         try:
-            response = request_with_retries(URL, headers=get_headers(location), params=PARAMS, timeout=10)
+            response = request_with_retries(URL, headers=get_headers(location), json=PARAMS, timeout=10)
             data = response.json()
             snippets = data.get("response", {}).get("snippets", [])
             products = [s.get("data", {}) for s in snippets if s.get("widget_type") == "product_card_snippet_type_2"]
