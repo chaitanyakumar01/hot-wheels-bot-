@@ -27,12 +27,14 @@ A Python bot that monitors Blinkit for Hot Wheels stock and sends Discord notifi
 - [.env.example](.env.example) — example environment configuration
 - [.dockerignore](.dockerignore) — files excluded from Docker builds
 
-## One-click deploy
-If you want the easiest hosted setup, use Render:
+## Deployment
+This project can be deployed to supported hosting platforms such as Render, Railway, or other Docker-compatible environments.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/your-username/your-repo)
-
-Replace the GitHub URL in the button with your repository URL after pushing this project to GitHub.
+Typical deployment steps:
+1. Push the repository to GitHub.
+2. Create a new service on your hosting platform and connect the repository.
+3. Set the required environment variables listed below.
+4. Start the service using the included startup configuration.
 
 ## Local setup
 
