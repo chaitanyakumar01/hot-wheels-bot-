@@ -182,6 +182,17 @@ def stop_health_server():
         health_thread.join(timeout=2)
         health_thread = None
 
+
+def resolve_state_file(path: str) -> str:
+    candidate = Path(path or "seen_products.db").expanduser()
+    if not candidate.is_absolute():
+        cwd_path = Path.cwd()
+        candidate = cwd_path / candidate
+        if not os.access(str(cwd_path), os.W_OK):
+            candidate = Path("/tmp") / candidate.name
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    return str(candidate)
+
 # register signals later in __main__ after logger is configured
 
 
@@ -378,7 +389,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hot Wheels monitor")
     parser.add_argument("--once", action="store_true", help="Run one check and exit")
     parser.add_argument("--interval", type=int, default=10, help="Polling interval in minutes")
-    parser.add_argument("--state-file", default="seen_products.db", help="SQLite DB path for seen state")
+    parser.add_argument("--state-file", default=os.getenv("STATE_FILE", "seen_products.db"), help="SQLite DB path for seen state")
     parser.add_argument("--log-file", default=None, help="Optional log file path")
     parser.add_argument("--send-test", action="store_true", help="Send a single test Discord message and exit")
     parser.add_argument("--force-notify", action="store_true", help="Skip seeding and notify for current items")
@@ -402,6 +413,9 @@ if __name__ == "__main__":
         args.health_port = int(os.getenv("PORT", "0")) or None
     if args.health_port:
         start_health_server(args.health_port)
+
+    args.state_file = resolve_state_file(args.state_file)
+    logger.info("Using state file %s", args.state_file)
 
     # initialize seen store
     seen_store = SeenStore(args.state_file)
